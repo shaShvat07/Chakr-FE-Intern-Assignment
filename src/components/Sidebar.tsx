@@ -20,7 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 export const navItems = [
-//   { name: "Search", icon: Search, href: "/search" },
+  //   { name: "Search", icon: Search, href: "/search" },
   { name: "Notifications", icon: Bell, href: "/notifications" },
   { name: "Tasks", icon: CheckSquare, href: "/tasks" },
   {
@@ -41,27 +41,39 @@ export const navItems = [
   { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
-export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) {
+type SidebarProps = {
+  onOpenSearch: () => void;
+  isOpen: boolean;
+};
+
+export default function Sidebar({ onOpenSearch, isOpen }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 bg-gray-100 text-gray-800 flex flex-col">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold">CRM Dashboard</h1>
-      </div>
+    <div
+      className={cn(
+        "fixed left-0 h-[calc(100vh-4rem)] w-64 bg-background border-r transition-transform duration-200 ease-in-out",
+        isOpen ? "translate-x-0" : "-translate-x-full",
+        "md:translate-x-0"
+      )}
+    >
       <nav className="flex-1 overflow-y-auto">
+        <div className="p-4 border-b">
+          <h1 className="text-2xl font-bold text-foreground">CRM Dashboard</h1>
+        </div>
         <Button
           onClick={onOpenSearch}
-          className="w-full justify-start mb-4 text-left bg-gray-100 text-gray-800 hover:bg-gray-200"
+          className="w-full justify-start mb-3 text-left"
+          variant="ghost"
         >
           <Search className="mr-3 h-6 w-6" />
           Search
         </Button>
         {navItems.map((item, index) => (
-          <div key={index} className="mb-4">
+          <div key={index} className="mb-3">
             {item.items ? (
               <>
-                <h2 className="px-4 text-xs font-semibold uppercase text-gray-300">
+                <h2 className="px-4 text-xs font-semibold uppercase text-muted-foreground">
                   {item.name}
                 </h2>
                 {item.items.map((subItem) => (
@@ -78,15 +90,15 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
           </div>
         ))}
       </nav>
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-r border-border">
         <div className="flex items-center">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="ml-3">
-            <p className="text-sm font-medium">John Doe</p>
-            <p className="text-xs text-gray-500">ABC Corporation</p>
+            <p className="text-sm font-medium text-foreground">John Doe</p>
+            <p className="text-xs text-muted-foreground">ABC Corporation</p>
           </div>
         </div>
       </div>
@@ -101,8 +113,8 @@ function NavItem({ item, isActive }: { item: any; isActive: boolean }) {
       className={cn(
         "flex items-center px-4 py-2 text-sm font-medium rounded-md",
         isActive
-          ? "bg-gray-200 text-gray-900"
-          : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
       )}
     >
       <item.icon className="mr-3 h-6 w-6" />
