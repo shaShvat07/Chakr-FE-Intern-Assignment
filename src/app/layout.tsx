@@ -34,7 +34,7 @@ export default function RootLayout({
               isOpen={isSidebarOpen}
             />
             <Navbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 mt-5">
               <main
                 className={`flex-1 p-8 overflow-auto ${
                   isSidebarOpen ? "md:ml-64" : ""
