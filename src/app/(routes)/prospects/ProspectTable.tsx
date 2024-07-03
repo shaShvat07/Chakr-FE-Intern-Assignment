@@ -1,4 +1,5 @@
-// app/(routes)/prospects/ProspectTable.tsx
+// app/routes/prospects/ProspectTable.tsx
+
 import { useState, useMemo } from "react";
 import {
   useReactTable,
@@ -24,39 +25,38 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react"; // Import the sorting icon
 import EditableCell from "./EditableCell";
-type ProspectTableProps = {
-  prospects: Prospect[];
-  onProspectClick: (prospect: Prospect) => void;
-};
+import { initialProspects } from "@/lib/data";
 
-export default function ProspectTable({
-  prospects,
-  onProspectClick,
-}: ProspectTableProps) {
+export default function ProspectTable() {
+  const [localProspects, setLocalProspects] =
+    useState<Prospect[]>(initialProspects);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState("");
-
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [addingProspect, setAddingProspect] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
 
   const columns = useMemo<ColumnDef<Prospect>[]>(
     () => [
       {
         id: "select",
-        header: ({ table }) => (
+        header: () => (
           <Checkbox
-            checked={table.getIsAllPageRowsSelected()}
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
+            checked={selectedRows.length === localProspects.length}
+            onCheckedChange={(checked) => handleSelectAllRows(!!checked)}
             aria-label="Select all"
           />
         ),
-        cell: ({ row }) => (
+        cell: (info) => (
           <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            checked={selectedRows.includes(info.row.original.id)}
+            onCheckedChange={(checked) =>
+              handleSelectRow(!!checked, info.row.original.id)
+            }
             aria-label="Select row"
-          />
+          />    
         ),
       },
       {
@@ -75,7 +75,7 @@ export default function ProspectTable({
             href={`/prospects/${info.row.original.id}`}
             className="hover:underline"
           >
-            {info.getValue()}
+           {info.getValue() as React.ReactNode}
           </Link>
         ),
       },
@@ -95,7 +95,7 @@ export default function ProspectTable({
             href={`/prospects/${info.row.original.id}`}
             className="hover:underline"
           >
-            {info.getValue()}
+            {info.getValue() as React.ReactNode}
           </Link>
         ),
       },
@@ -110,54 +110,51 @@ export default function ProspectTable({
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         ),
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <EditableCell
+            value={info.getValue() as string}
+            onChange={(newValue) =>
+              handleProspectUpdate({ ...info.row.original, email: newValue })
+            }
+          />
+        ),
+      },
+      {
+        accessorKey: "phone",
+        header: "Phone",
+        cell: (info) => (
+          <EditableCell
+            value={info.getValue() as string}
+            onChange={(newValue) =>
+              handleProspectUpdate({ ...info.row.original, phone: newValue })
+            }
+          />
+        ),
       },
       {
         accessorKey: "company",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Company
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: "Company",
+        cell: (info) => (
+          <EditableCell
+            value={info.getValue() as string}
+            onChange={(newValue) =>
+              handleProspectUpdate({ ...info.row.original, company: newValue })
+            }
+          />
         ),
-        cell: (info) => info.getValue(),
       },
       {
         accessorKey: "status",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Status
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: "Status",
         cell: (info) => info.getValue(),
       },
-      {
-        id: "actions",
-        cell: ({ row }) => (
-          <Button onClick={() => handleEdit(row.original)}>Edit</Button>
-        ),
-      },
     ],
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [localProspects.length, selectedRows]
   );
 
-  const handleEdit = (prospect: Prospect) => {
-    // Implement edit logic
-  };
-
-  const handleDelete = () => {
-    // Implement delete logic for selected rows
-  };
-
   const table = useReactTable({
-    data: prospects,
+    data: localProspects,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -169,6 +166,63 @@ export default function ProspectTable({
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
   });
+
+  const handleProspectUpdate = (updatedProspect: Prospect) => {
+    setLocalProspects((prevProspects) =>
+      prevProspects.map((p) =>
+        p.id === updatedProspect.id ? { ...p, ...updatedProspect } : p
+      )
+    );
+  };
+
+  const handleDelete = () => {
+    setLocalProspects((prevProspects) =>
+      prevProspects.filter((prospect) => !selectedRows.includes(prospect.id))
+    );
+    setSelectedRows([]);
+  };
+
+  const handleAddProspect = () => {
+    if (firstName && lastName && email) {
+      const newProspect: Prospect = {
+        id: Date.now().toString(),
+        firstName,
+        lastName,
+        email,
+        phone: "",
+        company: "",
+        status: "New",
+        dateAdded: new Date(),
+      };
+      setLocalProspects([newProspect, ...localProspects]);
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setAddingProspect(false);
+    } else {
+      alert(
+        "Please fill in all fields (First Name, Last Name, Email) to add a new prospect."
+      );
+    }
+  };
+
+  const handleSelectRow = (checked: boolean, prospectId: string) => {
+    if (checked) {
+      setSelectedRows((prevSelectedRows) => [...prevSelectedRows, prospectId]);
+    } else {
+      setSelectedRows((prevSelectedRows) =>
+        prevSelectedRows.filter((id) => id !== prospectId)
+      );
+    }
+  };
+
+  const handleSelectAllRows = (checked: boolean) => {
+    if (checked) {
+      setSelectedRows(localProspects.map((prospect) => prospect.id));
+    } else {
+      setSelectedRows([]);
+    }
+  };
 
   return (
     <div>
@@ -187,9 +241,34 @@ export default function ProspectTable({
           >
             Delete Selected
           </Button>
-          <Button>Add Prospect</Button>
+          <Button onClick={() => setAddingProspect(true)}>Add Prospect</Button>
         </div>
       </div>
+
+      {addingProspect && (
+        <div className="flex mb-4">
+          <Input
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="mr-2"
+          />
+          <Input
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="mr-2"
+          />
+          <Input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mr-2"
+          />
+          <Button onClick={handleAddProspect}>Save</Button>
+        </div>
+      )}
+
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -209,12 +288,14 @@ export default function ProspectTable({
           {table.getRowModel().rows.map((row) => (
             <TableRow
               key={row.id}
-              // onClick={() => onProspectClick(row.original)}
-              className="cursor-pointer hover:bg-muted"
+              className="cursor-pointer hover:bg-muted min-w-[200px]"
             >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              {row.getVisibleCells().map((cell, index) => (
+                <TableCell key={cell.id} className="min-w-[200px]">
+                  {/* Render checkboxes only for the first cell (select column) */}
+                  {index === 0
+                    ? flexRender(cell.column.columnDef.cell, cell.getContext())
+                    : flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
             </TableRow>
