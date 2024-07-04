@@ -63,7 +63,7 @@ export default function Sidebar({ onOpenSearch, isOpen }: SidebarProps) {
         </div>
         <Button
           onClick={onOpenSearch}
-          className="w-full justify-start mb-3 text-left"
+          className="w-full justify-start mb-3 text-left text-muted-foreground"
           variant="ghost"
         >
           <Search className="mr-3 h-6 w-6" />
