@@ -21,7 +21,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
 
   return (
     // Navbar component
-    <nav className="bg-background border-b fixed ml-64 w-[calc(100%-16rem)]">
+    <nav className="bg-background z-100000000 border-b fixed ml-64 w-[calc(100%-16rem)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">

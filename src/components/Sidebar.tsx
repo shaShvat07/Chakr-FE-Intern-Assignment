@@ -73,7 +73,7 @@ export default function Sidebar({ onOpenSearch, isOpen }: SidebarProps) {
           <div key={index} className="mb-3">
             {item.items ? (
               <>
-                <h2 className="px-4 text-xs font-semibold uppercase text-muted-foreground">
+                <h2 className="px-4 text-xs font-semibold uppercase text-muted-foreground mb-1">
                   {item.name}
                 </h2>
                 {item.items.map((subItem) => (
@@ -97,8 +97,8 @@ export default function Sidebar({ onOpenSearch, isOpen }: SidebarProps) {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="ml-3">
-            <p className="text-sm font-medium text-foreground">John Doe</p>
-            <p className="text-xs text-muted-foreground">ABC Corporation</p>
+            <p className="text-sm font-medium text-foreground">Shashvat Patel</p>
+            <p className="text-xs text-muted-foreground">Chakr</p>
           </div>
         </div>
       </div>

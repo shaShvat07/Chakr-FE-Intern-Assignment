@@ -46,8 +46,8 @@ export default function TaskManager({ prospectId }: { prospectId: string }) {
   };
 
   return (
-    <div className="h-full">
-      <div className="flex space-x-2 mb-4 h-full">
+    <div className="h-fit overflow-y-auto">
+      <div className="flex space-x-2 mb-4 h-fit">
         <Input
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}

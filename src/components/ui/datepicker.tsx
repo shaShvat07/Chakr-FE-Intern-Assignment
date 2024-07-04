@@ -13,11 +13,11 @@ interface DatePickerProps {
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
   ({ selected, onChange, placeholderText }, ref) => {
     return (
-      <ReactDatePicker
-        selected={selected}
-        onChange={onChange}
-        customInput={<Input ref={ref} placeholder="Select a Deadline" />}
-      />
+        <ReactDatePicker
+          selected={selected}
+          onChange={onChange}
+          customInput={<Input ref={ref} placeholder="Select a Deadline" />}
+        />
     );
   }
 );
