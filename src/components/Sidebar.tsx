@@ -58,9 +58,13 @@ export default function Sidebar({ onOpenSearch, isOpen }: SidebarProps) {
       )}
     >
       <nav className="flex-1 overflow-y-auto">
-        <div className="p-4 border-b">
-          <h1 className="text-2xl font-bold text-foreground">CRM Dashboard</h1>
-        </div>
+        <Link href="/" className="block">
+          <div className="p-4 border-b hover:bg-secondary transition-colors duration-200">
+            <h1 className="text-2xl font-bold text-foreground">
+              CRM Dashboard
+            </h1>
+          </div>
+        </Link>
         <Button
           onClick={onOpenSearch}
           className="w-full justify-start mb-3 text-left text-muted-foreground"
@@ -97,7 +101,9 @@ export default function Sidebar({ onOpenSearch, isOpen }: SidebarProps) {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="ml-3">
-            <p className="text-sm font-medium text-foreground">Shashvat Patel</p>
+            <p className="text-sm font-medium text-foreground">
+              Shashvat Patel
+            </p>
             <p className="text-xs text-muted-foreground">Chakr</p>
           </div>
         </div>
